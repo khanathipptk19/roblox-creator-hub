@@ -66,6 +66,14 @@ export default async function Home() {
             <li><b>{as.c}</b><span>โมเดลในคลัง</span></li>
           </ul>
         </div>
+        <div className="heroRight">
+          <div className="heroLogoWrap">
+            <img
+              src="/images/roblox-studio.png"
+              alt="Roblox Studio"
+              className="floating-studio-logo"
+            />
+          </div>
         <div className="console" aria-hidden="true">
           <div className="consoleBar">Output</div>
           <pre>{`> Players.PlayerAdded: สวัสดี ผู้สร้างเกม
@@ -73,6 +81,7 @@ export default async function Home() {
 > Humanoid.Health = 0
 > เกมของคุณพร้อมเผยแพร่`}</pre>
         </div>
+        </div> 
       </section>
 
       <section aria-labelledby="steps-h">
