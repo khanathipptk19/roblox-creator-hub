@@ -337,3 +337,19 @@ details.more[open] summary { margin-bottom: .75rem; }
 .lessonTable th { background: var(--panel2); }
 .lessonTable td:first-child { font-family: var(--font-mono), monospace; font-size: .88rem; }
 @media (max-width: 820px) { .lessonLayout { grid-template-columns: 1fr; } .toc { position: static; } }
+
+/* หน้าแรก: สคริปต์น่าสนใจ + โมเดลยอดฮิต */
+.sectionHead { display: flex; justify-content: space-between; align-items: end; gap: 1rem; flex-wrap: wrap; margin-top: 3rem; }
+.sectionHead h2 { margin-top: .2rem; }
+.homeGrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.homeGrid.four { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.miniCard { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 1.1rem; display: flex; flex-direction: column; gap: .5rem; }
+.miniCard h3 { margin: 0; font-size: 1.1rem; }
+.miniCard p { margin: 0; font-size: .93rem; color: var(--muted); }
+.miniCard .btn { align-self: flex-start; margin-top: auto; }
+.metaChips li.hot { color: var(--accent); border-color: var(--accent); }
+.codePreview { margin: .25rem 0; background: var(--code); border: 1px solid var(--line); border-radius: 8px; padding: .6rem .8rem; font: .8rem/1.55 var(--font-mono), monospace; color: #d6deeb; overflow: auto; max-height: 190px; white-space: pre; }
+.miniAsset { display: flex; flex-direction: column; background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); overflow: hidden; text-decoration: none; color: var(--text); }
+.miniAsset:hover { border-color: var(--accent); }
+.miniAssetBody { padding: .8rem 1rem; display: flex; flex-direction: column; gap: .15rem; }
+.scriptCard { scroll-margin-top: 80px; }

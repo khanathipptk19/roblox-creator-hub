@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS assets (
   preview_url VARCHAR(255) NULL,
   creator_verified TINYINT(1) NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_assets_source (source_id),
   CONSTRAINT fk_assets_source FOREIGN KEY (source_id) REFERENCES asset_sources(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
@@ -223,6 +224,8 @@ CREATE TABLE IF NOT EXISTS ai_runs (
   raw_text MEDIUMTEXT NOT NULL,
   items_found INT NOT NULL DEFAULT 0,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_runs_admin (admin_id),
+  INDEX idx_runs_source (source_id),
   CONSTRAINT fk_runs_admin FOREIGN KEY (admin_id) REFERENCES users(id) ON DELETE SET NULL,
   CONSTRAINT fk_runs_source FOREIGN KEY (source_id) REFERENCES asset_sources(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
@@ -237,7 +240,22 @@ CREATE TABLE IF NOT EXISTS asset_candidates (
   reviewed_by INT NULL,
   reviewed_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_cand_run (run_id),
+  INDEX idx_cand_asset (asset_id),
+  INDEX idx_cand_user (reviewed_by),
   CONSTRAINT fk_cand_run FOREIGN KEY (run_id) REFERENCES ai_runs(id) ON DELETE CASCADE,
   CONSTRAINT fk_cand_asset FOREIGN KEY (asset_id) REFERENCES assets(id) ON DELETE SET NULL,
   CONSTRAINT fk_cand_user FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL
+) ENGINE=InnoDB;
+
+-- ===== สถิติการใช้งาน (จัดอันดับหน้าแรก) =====
+
+
+CREATE TABLE IF NOT EXISTS item_usage (
+  user_id INT NOT NULL,
+  kind ENUM('script','asset') NOT NULL,
+  item_id INT NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_id, kind, item_id),
+  INDEX idx_usage_item (kind, item_id)
 ) ENGINE=InnoDB;

@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { DIFFICULTY } from '@/lib/utils';
+import { trackUse } from '@/lib/track';
 
 export default function ScriptCard({ script, compact = false }) {
   const [copied, setCopied] = useState(false);
@@ -9,7 +10,7 @@ export default function ScriptCard({ script, compact = false }) {
   const concepts = script.key_concepts || [];
 
   async function copy() {
-    try { await navigator.clipboard.writeText(script.code); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {}
+    try { await navigator.clipboard.writeText(script.code); setCopied(true); setTimeout(() => setCopied(false), 1800); trackUse('script', script.id); } catch {}
   }
   function download() {
     const blob = new Blob([script.code], { type: 'text/plain;charset=utf-8' });
@@ -18,10 +19,11 @@ export default function ScriptCard({ script, compact = false }) {
     a.download = `${script.slug}.luau`;
     a.click();
     URL.revokeObjectURL(a.href);
+    trackUse('script', script.id);
   }
 
   return (
-    <article className={`scriptCard ${script.is_featured ? 'featured' : ''} ${compact ? 'compact' : ''}`}>
+    <article id={`script-${script.slug}`} className={`scriptCard ${script.is_featured ? 'featured' : ''} ${compact ? 'compact' : ''}`}>
       <header className="scriptHead">
         <div>
           <h2>{script.title}{script.is_featured ? <span className="tag">ยอดนิยม</span> : null}</h2>

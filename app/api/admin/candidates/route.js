@@ -3,6 +3,8 @@ import { pool } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { extractAssets } from '@/lib/ai';
 
+export const maxDuration = 60;
+
 export async function POST(req) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: 'forbidden' }, { status: 403 });

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { CATEGORIES, PLATFORMS, STYLES, safeUrl } from '@/lib/utils';
+import { trackUse } from '@/lib/track';
 
 const STATUS = {
   safe: { cls: 'ok', text: 'ผ่านการสแกน · 0 Malicious Scripts' },
@@ -22,7 +23,7 @@ function Card({ a }) {
   const r = a.scan_report || {};
   const blocked = a.scan_status === 'flagged';
   async function copyId() {
-    try { await navigator.clipboard.writeText(a.toolbox_id); setCopied(true); setTimeout(() => setCopied(false), 1800); } catch {}
+    try { await navigator.clipboard.writeText(a.toolbox_id); setCopied(true); setTimeout(() => setCopied(false), 1800); trackUse('asset', a.id); } catch {}
   }
   return (
     <article className="asset">
@@ -67,11 +68,11 @@ function Card({ a }) {
         <div className="actions">
           {a.toolbox_id && !blocked && (
             <>
-              <a className="btn small" href={`https://create.roblox.com/store/asset/${encodeURIComponent(a.toolbox_id)}`} target="_blank" rel="noreferrer">เปิดใน Roblox Studio</a>
+              <a className="btn small" href={`https://create.roblox.com/store/asset/${encodeURIComponent(a.toolbox_id)}`} target="_blank" rel="noreferrer" onClick={() => trackUse('asset', a.id)}>เปิดใน Roblox Studio</a>
               <button className="btn ghost small" onClick={copyId}>{copied ? 'คัดลอกแล้ว' : `คัดลอก ID ${a.toolbox_id}`}</button>
             </>
           )}
-          {a.file_url && a.scan_status === 'safe' && <a className="btn ghost small" href={a.file_url} download>ดาวน์โหลด .rbxm</a>}
+          {a.file_url && a.scan_status === 'safe' && <a className="btn ghost small" href={a.file_url} download onClick={() => trackUse('asset', a.id)}>ดาวน์โหลด .rbxm</a>}
         </div>
       </div>
     </article>

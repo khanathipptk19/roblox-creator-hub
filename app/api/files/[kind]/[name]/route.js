@@ -1,8 +1,7 @@
-import fs from 'fs/promises';
 import { NextResponse } from 'next/server';
 import { pool } from '@/lib/db';
 import { getSession, requireAdmin } from '@/lib/auth';
-import { filePath } from '@/lib/storage';
+import { streamStored } from '@/lib/storage';
 
 export const runtime = 'nodejs';
 const TYPES = { rbxm: 'application/octet-stream', png: 'image/png', jpg: 'image/jpeg', webp: 'image/webp' };
@@ -24,8 +23,8 @@ export async function GET(req, { params }) {
     if (a) downloadName = a.name;
   }
 
-  let buf;
-  try { buf = await fs.readFile(filePath(kind, name)); } catch { return new NextResponse('Not found', { status: 404 }); }
+  const body = await streamStored(kind, name);
+  if (!body) return new NextResponse('Not found', { status: 404 });
 
   const headers = {
     'Content-Type': TYPES[name.split('.').pop()],
@@ -36,5 +35,5 @@ export async function GET(req, { params }) {
     const base = `${String(downloadName).replace(/[\\/:*?"<>|\r\n]+/g, ' ').trim().slice(0, 80) || 'model'}.rbxm`;
     headers['Content-Disposition'] = `attachment; filename="model.rbxm"; filename*=UTF-8''${encodeURIComponent(base)}`;
   }
-  return new Response(buf, { headers });
+  return new Response(body, { headers });
 }
