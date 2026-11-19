@@ -8,13 +8,11 @@ export default async function UserLayout({ children }) {
   return (
     <>
       <Navbar session={session} />
-      <div className={isAdmin ? 'banner adminView' : 'banner'}>
-        {isAdmin ? (
-          <>คุณกำลังดูในมุมมองผู้ใช้ <Link href="/admin">กลับแผงแอดมิน</Link></>
-        ) : (
-          <>โหมดผู้ชม: ดู คัดลอก และดาวน์โหลดได้ แต่แก้ไขข้อมูลไม่ได้</>
-        )}
-      </div>
+      {isAdmin && (
+        <div className="banner adminView">
+          คุณกำลังดูในมุมมองผู้ใช้ <Link href="/admin">กลับแผงแอดมิน</Link>
+        </div>
+      )}
       <main className="container">{children}</main>
     </>
   );

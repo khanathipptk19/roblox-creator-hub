@@ -20,16 +20,15 @@ a { color: var(--blue); }
 
 /* nav */
 .nav { background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 10; }
-.navInner { max-width: 1080px; margin: 0 auto; padding: .6rem 1.25rem; display: flex; gap: 1.25rem; align-items: center; flex-wrap: wrap; }
-.brand { font-family: var(--font-head); font-weight: 700; font-size: 1.15rem; color: var(--accent); }
-.navLinks { display: flex; gap: .25rem; flex: 1; flex-wrap: wrap; }
-.navLinks a { color: var(--muted); text-decoration: none; padding: .35rem .75rem; border-radius: 6px; }
+.navInner { max-width: 1220px; margin: 0 auto; padding: .6rem 1.25rem; display: flex; gap: .75rem; align-items: center; flex-wrap: nowrap; }
+.brand { font-family: var(--font-head); font-weight: 700; font-size: 1.15rem; color: var(--accent); white-space: nowrap; flex-shrink: 0; }
+.navLinks { display: flex; gap: .15rem; flex: 1; flex-wrap: nowrap; align-items: center; }
+.navLinks a { color: var(--muted); text-decoration: none; padding: .35rem .6rem; border-radius: 6px; white-space: nowrap; font-size: .92rem; }
 .navLinks a:hover { color: var(--text); background: var(--panel2); }
 .navLinks a.active { color: var(--text); background: var(--panel2); box-shadow: inset 0 -2px 0 var(--accent); }
-.navUser { display: flex; gap: .6rem; align-items: center; }
+.navUser { display: flex; gap: .5rem; align-items: center; white-space: nowrap; flex-shrink: 0; }
 .role { font-size: .8rem; padding: .1rem .6rem; border-radius: 99px; background: var(--panel2); color: var(--muted); }
 .role.admin { background: var(--accent); color: var(--accent-ink); font-weight: 600; }
-
 /* buttons & forms */
 .btn { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px; padding: .6rem 1.1rem; font: 600 1rem var(--font-body); cursor: pointer; text-decoration: none; display: inline-block; }
 .btn:hover { filter: brightness(1.08); }
