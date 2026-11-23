@@ -16,7 +16,7 @@ function Row({ label, value }) {
   return <li><span>{label}</span><b className={c}>{t}</b></li>;
 }
 
-function Card({ a }) {
+function Card({ a, isFav, onToggleFav }) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const st = STATUS[a.scan_status] || STATUS.pending;
@@ -30,6 +30,35 @@ function Card({ a }) {
       <div className={`preview ph-${a.category}`}>
         {imgOk(a.preview_url) ? <img src={a.preview_url} alt="" loading="lazy" /> : <span className="phLabel">{CATEGORIES[a.category]}</span>}
         <span className={`badge onImg ${st.cls}`}>{st.text}</span>
+
+        {/* ปุ่ม Favorite มุมขวาบน */}
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onToggleFav(a.id); }}
+          title={isFav ? 'นำออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
+          aria-label={isFav ? 'นำออกจากรายการโปรด' : 'เพิ่มในรายการโปรด'}
+          style={{
+            position: 'absolute',
+            top: '10px',
+            right: '10px',
+            width: '32px',
+            height: '32px',
+            borderRadius: '8px',
+            background: 'rgba(15, 23, 42, 0.78)',
+            border: isFav ? '1px solid #facc15' : '1px solid rgba(148, 163, 184, 0.35)',
+            color: isFav ? '#facc15' : '#cbd5e1',
+            fontSize: '18px',
+            lineHeight: 1,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            zIndex: 2,
+          }}
+        >
+          {isFav ? '★' : '☆'}
+        </button>
+
         <span className="tris">{a.tris != null ? `${a.tris.toLocaleString()} Tris` : 'GUI'} · {STYLES[a.style] || STYLES.other}</span>
       </div>
       <div className="assetBody">
@@ -88,7 +117,30 @@ export default function AssetBrowser({ assets, sources = [] }) {
   const [safe, setSafe] = useState({ obf: false, remote: false, lag: false });
   const [streaming, setStreaming] = useState(false);
   const [sort, setSort] = useState('new');
+
+  // State สำหรับ Favorite
+  const [favorites, setFavorites] = useState([]);
+  const [onlyFav, setOnlyFav] = useState(false);
+
   const search = useRef(null);
+
+  // โหลดรายการโปรดจาก localStorage
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem('creatorhub_asset_favs') || '[]');
+      if (Array.isArray(saved)) setFavorites(saved);
+    } catch {}
+  }, []);
+
+  const toggleFav = (id) => {
+    setFavorites((prev) => {
+      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
+      try {
+        localStorage.setItem('creatorhub_asset_favs', JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+  };
 
   useEffect(() => {
     const h = (e) => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') { e.preventDefault(); search.current?.focus(); } };
@@ -97,11 +149,20 @@ export default function AssetBrowser({ assets, sources = [] }) {
   }, []);
 
   const toggleStyle = (k) => setStyles((s) => (s.includes(k) ? s.filter((x) => x !== k) : [...s, k]));
-  const reset = () => { setQ(''); setCat('all'); setStyles([]); setMaxTris(sliderMax); setSafe({ obf: false, remote: false, lag: false }); setStreaming(false); };
+  const reset = () => {
+    setQ('');
+    setCat('all');
+    setStyles([]);
+    setMaxTris(sliderMax);
+    setSafe({ obf: false, remote: false, lag: false });
+    setStreaming(false);
+    setOnlyFav(false);
+  };
 
   const list = useMemo(() => {
     const t = q.trim().toLowerCase();
     const out = assets.filter((a) => {
+      if (onlyFav && !favorites.includes(a.id)) return false;
       if (cat !== 'all' && a.category !== cat) return false;
       if (t && ![a.name, a.description, a.toolbox_id, a.tags, a.creator_credit, a.source_name].join(' ').toLowerCase().includes(t)) return false;
       if (styles.length && !styles.includes(a.style)) return false;
@@ -119,10 +180,16 @@ export default function AssetBrowser({ assets, sources = [] }) {
       tris_desc: (a, b) => (b.tris ?? -1) - (a.tris ?? -1),
       name: (a, b) => a.name.localeCompare(b.name, 'th'),
     };
-    return [...out].sort(by[sort]);
-  }, [assets, q, cat, styles, maxTris, safe, streaming, sort]);
+    return [...out].sort((a, b) => {
+      const aFav = favorites.includes(a.id) ? 1 : 0;
+      const bFav = favorites.includes(b.id) ? 1 : 0;
+      if (aFav !== bFav) return bFav - aFav; // ดันรายการโปรดขึ้นบนสุดเสมอ
+      return by[sort](a, b);
+    });
+  }, [assets, q, cat, styles, maxTris, safe, streaming, sort, favorites, onlyFav]);
 
   const count = (c) => (c === 'all' ? assets.length : assets.filter((a) => a.category === c).length);
+  const favCount = useMemo(() => assets.filter((a) => favorites.includes(a.id)).length, [assets, favorites]);
 
   return (
     <>
@@ -155,6 +222,13 @@ export default function AssetBrowser({ assets, sources = [] }) {
       <div className="hubLayout">
         <aside className="filters" aria-label="ตัวกรองละเอียด">
           <div className="filterHead"><h3>ตัวกรองละเอียด</h3><button className="linkBtn" onClick={reset}>รีเซ็ต</button></div>
+
+          <fieldset>
+            <legend>รายการโปรด</legend>
+            <label className="chk">
+              <input type="checkbox" checked={onlyFav} onChange={(e) => setOnlyFav(e.target.checked)} /> ★ รายการโปรดของฉัน <small>({favCount})</small>
+            </label>
+          </fieldset>
 
           <fieldset>
             <legend>สไตล์กราฟิก</legend>
@@ -191,7 +265,20 @@ export default function AssetBrowser({ assets, sources = [] }) {
               </select>
             </label>
           </div>
-          {list.length === 0 ? <p className="muted">ไม่พบโมเดลที่ตรงกับตัวกรอง ลองกดรีเซ็ต</p> : <div className="grid">{list.map((a) => <Card key={a.id} a={a} />)}</div>}
+          {list.length === 0 ? (
+            <p className="muted">ไม่พบโมเดลที่ตรงกับตัวกรอง ลองกดรีเซ็ต</p>
+          ) : (
+            <div className="grid">
+              {list.map((a) => (
+                <Card
+                  key={a.id}
+                  a={a}
+                  isFav={favorites.includes(a.id)}
+                  onToggleFav={toggleFav}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </>
