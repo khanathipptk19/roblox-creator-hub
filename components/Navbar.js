@@ -1,8 +1,10 @@
 import NavLinks from './NavLinks';
 import LogoutButton from './LogoutButton';
+import OpenAuthButton from './OpenAuthButton';
 
 export default function Navbar({ session }) {
   const isAdmin = session?.role === 'admin';
+
   return (
     <header className="nav">
       <div className="navInner">
@@ -14,12 +16,23 @@ export default function Navbar({ session }) {
           />
           Creator Hub
         </span>
+
+        {/* โชว์เมนูครบตลอดเวลา (ถ้ายังไม่ล็อกอิน isAdmin จะเป็น false) */}
         <NavLinks isAdmin={isAdmin} />
-        <div className="navUser">
-          <span className={isAdmin ? 'role admin' : 'role'}>{isAdmin ? 'แอดมิน' : 'ผู้ใช้ '}</span>
-          <span className="muted">{session?.name}</span>
-          <LogoutButton />
-        </div>
+
+        {/* แยกเฉพาะปุ่มขวาสุดตามสถานะการล็อกอิน */}
+        {!session ? (
+          <div className="navUser guestActions">
+            <OpenAuthButton mode="register" className="btn ghost small">สมัครสมาชิก</OpenAuthButton>
+            <OpenAuthButton mode="login" className="btn small">เข้าสู่ระบบ</OpenAuthButton>
+          </div>
+        ) : (
+          <div className="navUser">
+            <span className={isAdmin ? 'role admin' : 'role'}>{isAdmin ? 'แอดมิน' : 'ผู้ใช้ '}</span>
+            <span className="muted">{session?.name}</span>
+            <LogoutButton />
+          </div>
+        )}
       </div>
     </header>
   );

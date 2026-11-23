@@ -386,3 +386,81 @@ details.more[open] summary { margin-bottom: .75rem; }
   animation-play-state: paused;
   transform: scale(1.1) rotate(-3deg);
 }
+/* ===== ป็อปอัปล็อกอินทับหน้าแรก ===== */
+.authOverlay { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; padding: 1rem; overflow-y: auto; background: rgba(10, 13, 24, .6); -webkit-backdrop-filter: blur(7px); backdrop-filter: blur(7px); animation: authFade .2s ease-out; }
+.authDialog { position: relative; width: min(430px, 100%); background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 1.5rem 1.6rem 1.4rem; box-shadow: 0 24px 70px rgba(0, 0, 0, .55); animation: authPop .3s cubic-bezier(.2, .9, .3, 1.15); }
+.authClose { position: absolute; top: .55rem; right: .65rem; background: none; border: 0; color: var(--muted); font-size: 1.7rem; line-height: 1; cursor: pointer; padding: .15rem .55rem; border-radius: 8px; }
+.authClose:hover { color: var(--text); background: var(--panel2); }
+.authTabs { display: grid; grid-template-columns: 1fr 1fr; gap: .25rem; background: var(--code); padding: .25rem; border-radius: 10px; margin: .6rem 0 1.1rem; }
+.authTabs button { background: none; border: 0; color: var(--muted); padding: .5rem; border-radius: 8px; font: inherit; cursor: pointer; }
+.authTabs button:hover { color: var(--text); }
+.authTabs button.on { background: var(--panel2); color: var(--text); font-weight: 600; box-shadow: inset 0 -2px 0 var(--accent); }
+.authForm h2 { margin: 0 0 .2rem; font-size: 1.5rem; }
+.authForm .authSub { margin: 0 0 1rem; }
+.authForm .btn { width: 100%; margin-top: .25rem; }
+.guestActions { margin-left: auto; }
+.guestTeaser { margin-top: 3rem; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--r); padding: 1.5rem; }
+@keyframes authFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes authPop { from { opacity: 0; transform: translateY(16px) scale(.96); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .authOverlay, .authDialog { animation: none; } }
+
+/* ===== แดชบอร์ดแอดมิน ===== */
+.adminMain { max-width: 1500px; }
+.dashHead { display: flex; justify-content: space-between; align-items: flex-end; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.25rem; }
+.dashHead h1 { margin: 0; }
+.dashHead p { margin: .2rem 0 0; }
+.dashActions { display: flex; gap: .5rem; flex-wrap: wrap; }
+.dashStats { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: .9rem; margin-bottom: 1.25rem; }
+.dashStat { display: flex; flex-direction: column; gap: .1rem; background: var(--panel); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: var(--r); padding: .95rem 1.1rem; text-decoration: none; color: var(--text); transition: transform .15s, border-color .15s; }
+.dashStat:hover { transform: translateY(-2px); border-color: var(--accent); }
+.dashStat span { color: var(--muted); font-size: .9rem; }
+.dashStat b { font: 700 2.1rem/1.15 var(--font-head); }
+.dashStat small { color: var(--muted); font-size: .78rem; }
+.dashStat.ok { border-left-color: var(--ok); } .dashStat.warn { border-left-color: var(--warn); } .dashStat.bad { border-left-color: var(--bad); }
+.dashGrid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 1rem; }
+.dashCard { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 1.1rem 1.25rem; min-width: 0; }
+.dashCard header { display: flex; justify-content: space-between; align-items: baseline; gap: .5rem; margin-bottom: .85rem; }
+.dashCard h2 { margin: 0; font-size: 1.05rem; }
+.dashCard header a { font-size: .85rem; }
+.span-4 { grid-column: span 4; } .span-5 { grid-column: span 5; } .span-6 { grid-column: span 6; } .span-7 { grid-column: span 7; }
+@media (max-width: 1100px) { .span-4, .span-5, .span-6, .span-7 { grid-column: span 12; } }
+
+.barChart { display: flex; align-items: flex-end; gap: 6px; height: 170px; }
+.barCol { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; min-width: 0; }
+.bar { display: block; width: 100%; max-width: 38px; background: var(--accent); border-radius: 4px 4px 0 0; }
+.barVal { font-size: .75rem; color: var(--text); min-height: 1em; }
+.barLbl { font-size: .72rem; color: var(--muted); }
+
+.todoList { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
+.todoList li { border-left: 3px solid var(--line); background: var(--code); border-radius: 0 8px 8px 0; padding: .55rem .85rem; display: flex; flex-direction: column; gap: .1rem; }
+.todoList li.bad { border-left-color: var(--bad); } .todoList li.warn { border-left-color: var(--warn); }
+.todoList a { color: var(--text); text-decoration: none; } .todoList a:hover { color: var(--accent); }
+.todoList b { font-size: 1.15rem; margin-right: .25rem; }
+.todoList small { color: var(--muted); }
+.allClear { color: var(--ok); background: rgba(127, 211, 154, .08); border-left: 3px solid var(--ok); border-radius: 0 8px 8px 0; padding: .8rem 1rem; margin: 0; }
+
+.hbars, .rankList { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
+.hbars li { display: grid; grid-template-columns: 110px 1fr 34px; gap: .6rem; align-items: center; font-size: .92rem; }
+.hbars b, .rankList b { text-align: right; }
+.hTrack, .rankBar { height: 9px; background: var(--code); border-radius: 99px; overflow: hidden; display: block; }
+.hTrack i, .rankBar i { display: block; height: 100%; border-radius: 99px; }
+.rankBar i { background: var(--accent); }
+.rankList li { display: grid; grid-template-columns: 26px minmax(0, 1.2fr) 1fr 34px; gap: .6rem; align-items: center; font-size: .92rem; }
+.rankNo { color: var(--muted); font-weight: 600; }
+.rankName { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.stackBar { display: flex; height: 16px; border-radius: 99px; overflow: hidden; background: var(--code); }
+.stackBar i, .legend i { display: block; } .stackBar i.ok, .legend i.ok { background: var(--ok); } .stackBar i.wait, .legend i.wait { background: var(--warn); } .stackBar i.bad, .legend i.bad { background: var(--bad); }
+.legend { list-style: none; padding: 0; margin: .9rem 0 0; display: grid; gap: .4rem; font-size: .92rem; }
+.legend li { display: flex; align-items: center; gap: .5rem; } .legend i { width: 11px; height: 11px; border-radius: 3px; } .legend b { margin-left: auto; }
+
+.sysList { list-style: none; padding: 0; margin: 0 0 .7rem; display: grid; gap: .45rem; font-size: .92rem; }
+.sysList li { display: flex; justify-content: space-between; gap: .75rem; border-bottom: 1px dashed var(--line); padding-bottom: .35rem; }
+.sysList b { font-weight: 600; text-align: right; } .okTxt { color: var(--ok); } .warnTxt { color: var(--warn); }
+.meter { height: 8px; background: var(--code); border-radius: 99px; overflow: hidden; } .meter i { display: block; height: 100%; background: var(--accent); }
+.dataTable.compact th, .dataTable.compact td { padding: .45rem .7rem; font-size: .9rem; }
+
+/* แถบเลื่อนธีมมืด / หมวดโมเดล / พรีวิวโค้ดไม่มีแถบเลื่อนซ้อน */
+:root { color-scheme: dark; }
+.ph-model { background: linear-gradient(135deg, #3b3f66, #1d2036); }
+.codePreview { max-height: none; overflow-y: hidden; }

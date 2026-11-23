@@ -3,6 +3,8 @@ import { pool } from '@/lib/db';
 import { parseJson, CATEGORIES, STYLES, DIFFICULTY } from '@/lib/utils';
 import RoadmapSteps from '@/components/RoadmapSteps';
 import Checklist from '@/components/Checklist';
+import { getSession } from '@/lib/auth';
+import OpenAuthButton from '@/components/OpenAuthButton';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'เส้นทางเริ่มต้น' };
@@ -36,12 +38,15 @@ async function popularAssets() {
 }
 
 export default async function Home() {
+  const session = await getSession();
+  const isGuest = !session;
   const [rows] = await pool.query('SELECT * FROM roadmap_steps ORDER BY step_no');
   const [items] = await pool.query('SELECT * FROM checklist_items ORDER BY sort_order, id');
   const [[sc]] = await pool.query('SELECT COUNT(*) AS c FROM scripts');
   const [[as]] = await pool.query('SELECT COUNT(*) AS c FROM assets');
-  const scripts = await popularScripts();
-  const assets = await popularAssets();
+  // ผู้เยี่ยมชมที่ยังไม่ล็อกอินเห็นเฉพาะส่วนต้อนรับ (ไม่ส่งโค้ดสคริปต์และรายการโมเดลไปให้)
+  const scripts = isGuest ? [] : await popularScripts();
+  const assets = isGuest ? [] : await popularAssets();
 
   const steps = rows.map((s) => ({
     id: s.id, step_no: s.step_no, title: s.title, level: s.level, duration: s.duration, summary: s.summary,
@@ -91,6 +96,17 @@ export default async function Home() {
         <RoadmapSteps steps={steps} />
       </section>
 
+      {isGuest ? (
+        <section className="guestTeaser" aria-labelledby="guest-h">
+          <h2 id="guest-h" className="flush">เข้าสู่ระบบเพื่อปลดล็อกคลังเนื้อหา</h2>
+          <p className="muted">สมัครฟรีเพื่อดูคลังสคริปต์พร้อมคำอธิบายทีละบรรทัด โมเดลฟรีที่ผ่านการตรวจ และบทเรียนภาษา Luau</p>
+          <div className="actions">
+            <OpenAuthButton mode="login" className="btn">เข้าสู่ระบบ</OpenAuthButton>
+            <OpenAuthButton mode="register" className="btn ghost">สมัครสมาชิกฟรี</OpenAuthButton>
+          </div>
+        </section>
+      ) : (
+        <>
       <section aria-labelledby="pop-scripts-h">
         <div className="sectionHead">
           <div>
@@ -155,6 +171,8 @@ export default async function Home() {
           </div>
         )}
       </section>
+        </>
+      )}
 
       <section aria-labelledby="check-h">
         <h2 id="check-h">เช็คลิสต์ก่อนเริ่มเขียนโค้ด</h2>

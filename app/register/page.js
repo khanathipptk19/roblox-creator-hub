@@ -1,3 +1,4 @@
-import AuthForm from '@/components/AuthForm';
-export const metadata = { title: 'สมัครสมาชิก' };
-export default function Page() { return <AuthForm mode="register" />; }
+import { redirect } from 'next/navigation';
+
+// เปิดป็อปอัปสมัครสมาชิกบนหน้าแรกแทน
+export default function Page() { redirect('/?auth=register'); }

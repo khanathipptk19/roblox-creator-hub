@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Navbar from '@/components/Navbar';
+import AuthModal from '@/components/AuthModal';
 import { getSession } from '@/lib/auth';
 
 export default async function UserLayout({ children }) {
@@ -14,6 +15,7 @@ export default async function UserLayout({ children }) {
         </div>
       )}
       <main className="container">{children}</main>
+      {!session && <AuthModal />}
     </>
   );
 }
