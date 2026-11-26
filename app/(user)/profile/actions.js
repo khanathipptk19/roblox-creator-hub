@@ -50,21 +50,24 @@ export async function changePassword(prevState, formData) {
     return { error: 'รหัสผ่านใหม่และการยืนยันรหัสผ่านไม่ตรงกัน' };
   }
 
-  try {
-    // ดึงรหัสผ่านเดิมมาตรวจสอบ (เปลี่ยนชื่อคอลัมน์ password ให้ตรงกับ DB ของคุณ)
-    const [rows] = await pool.query('SELECT password FROM users WHERE id = ?', [s.id]);
+ try {
+    // 1. เปลี่ยน SELECT password เป็น SELECT password_hash
+    const [rows] = await pool.query('SELECT password_hash FROM users WHERE id = ?', [s.id]);
     const user = rows[0];
 
-    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    // 2. เปลี่ยน user.password เป็น user.password_hash
+    const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
     if (!isMatch) {
       return { error: 'รหัสผ่านปัจจุบันไม่ถูกต้อง' };
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
-    await pool.query('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, s.id]);
+    // 3. เปลี่ยน SET password เป็น SET password_hash
+    await pool.query('UPDATE users SET password_hash = ? WHERE id = ?', [hashedPassword, s.id]);
 
     return { success: 'เปลี่ยนรหัสผ่านสำเร็จแล้ว' };
   } catch (err) {
+    console.error('Change password error:', err);
     return { error: 'เกิดข้อผิดพลาดในการเปลี่ยนรหัสผ่าน' };
   }
 }
